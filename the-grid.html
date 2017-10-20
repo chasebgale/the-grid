@@ -751,7 +751,11 @@ Example:
                 var current = resizer;
 
                 while (current.parentNode !== this) {
-                    current = current.parentNode;
+                    if (current.parentNode.host) {
+                        current = current.parentNode.host;
+                    } else {
+                        current = current.parentNode;
+                    }
                 }
 
                 return current !== this && current !== resizer ? current : undefined;
