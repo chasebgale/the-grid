@@ -285,7 +285,7 @@ Example:
                 if (isPlaceholder && !removed) {
                     this.placeholder = node;
                 } else {
-                    const resizers = node.querySelectorAll('[resize]') || [];
+                    let resizers = node.querySelectorAll('[resize]') || [];
 
                     // Look for grippers in the shadow of immediate children
                     if (!resizers.length && node.shadowRoot) {
