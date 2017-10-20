@@ -232,6 +232,12 @@ Example:
             connectedCallback () {
                 super.connectedCallback();
                 this.computeStyles();
+
+                // This is necessary as the first _upgradeEvents that fires (due to the property 'draggable' || 'resizable' being set on the-grid)
+                // will occur BEFORE child elements have finished layout, so no shadow dom, so can't dig into it looking for resizers/handles
+                Polymer.RenderStatus.afterNextRender(this, () => {
+                    this._upgradeEvents();
+                });
             }
 
             /**
@@ -280,6 +286,11 @@ Example:
                     this.placeholder = node;
                 } else {
                     const resizers = node.querySelectorAll('[resize]') || [];
+
+                    // Look for grippers in the shadow of immediate children
+                    if (!resizers.length && node.shadowRoot) {
+                        resizers = node.shadowRoot.querySelectorAll('[resize]') || [];
+                    }
 
                     Array.from(resizers).forEach(resizer => {
                         if (addOrRemoveResizeListener && !resizer._hasResizeListener) {
@@ -346,8 +357,8 @@ Example:
                     '--grid-cell-width': `${this.cellWidth}px`,
                     '--grid-cell-height': `${this.cellHeight}px`,
                     '--grid-cell-margin': `${this.cellMargin}px`,
-                    '--grid-move-animation-transition': `${this.animated ? 'top 0.5s ease, left 0.5s ease' : 'none'}`,
-                    '--grid-resize-animation-transition': `${this.animated ? 'top 0.5s ease, left 0.5s ease, width 0.5s ease, height 0.5s ease' : 'none'}`
+                    '--grid-move-animation-transition': `${this.animated ? 'top 0.5s ease, left 0.5s ease, opacity 0.3s, transform 0.3s' : 'none'}`,
+                    '--grid-resize-animation-transition': `${this.animated ? 'top 0.5s ease, left 0.5s ease, width 0.5s ease, height 0.5s ease, opacity 0.3s, transform 0.3s' : 'none'}`
                 };
 
                 for(let i = 0; i < cols; i++) {
